@@ -73,7 +73,10 @@ proc main =
 
   echo "Type text to speech:"
   for l in stdin.lines:
-    context.playSpeech(l, alSrc)
+    if l.len == 0:
+      context.playSpeech("何か書いてよ", alSrc)
+    else:
+      context.playSpeech(l, alSrc)
 
   context.playSpeech("さようなら", alSrc)
   sleep(1500)
