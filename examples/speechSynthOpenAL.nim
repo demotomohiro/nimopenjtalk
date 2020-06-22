@@ -38,17 +38,17 @@ proc delete(x: var OpenALSrc) =
   alDeleteSources(1, addr x.source)
   alDeleteBuffers(1, addr x.buffer)
 
-proc playSpeech(context: var OJTContext; text: string; src: var OpenALSrc) =
-  if context.synthesis(text):
+proc playSpeech(context: var OJTContext; voice: var OJTVoice; text: string; src: var OpenALSrc) =
+  if context.synthesis(voice, text):
     let
-      freq = context.getSamplingFrequency
-      numSamples = context.getNumSamples
+      freq = voice.getSamplingFrequency
+      numSamples = voice.getNumSamples
     if numSamples == 0:
       echo "No samples"
       return
     var samples = newSeqUninitialized[int16](numSamples)
     for i in 0..<numSamples:
-      samples[i] = context.getSpeechSample(i)
+      samples[i] = voice.getSpeechSample(i)
     alSourceStop(src.source)
     alSourcei(src.source, AL_BUFFER, 0)
     alBufferData(src.buffer, AL_FORMAT_MONO16, addr samples[0], (sizeof(samples[0]) * numSamples).ALsizei, freq.ALsizei)
@@ -59,26 +59,32 @@ proc playSpeech(context: var OJTContext; text: string; src: var OpenALSrc) =
 
 proc main =
   var
-    context = initialzie()
+    context = createContext()
+    voice = createVoice()
     alContext = initOpenAL()
     alSrc = initOpenALSrc()
   defer:
     alSrc.delete()
     alcontext.close()
+    voice.clear()
     context.clear()
 
-  if not context.load("../data/open_jtalk_dic_utf_8-1.11", "../data/mei/mei_normal.htsvoice"):
-    echo "Failed to load"
+  if not context.load("../data/open_jtalk_dic_utf_8-1.11"):
+    echo "Failed to load dictionary"
+    return
+
+  if not voice.load("../data/mei/mei_normal.htsvoice"):
+    echo "Failed to load voice"
     return
 
   echo "Type text to speech:"
   for l in stdin.lines:
     if l.len == 0:
-      context.playSpeech("何か書いてよ", alSrc)
+      context.playSpeech(voice, "何か書いてよ", alSrc)
     else:
-      context.playSpeech(l, alSrc)
+      context.playSpeech(voice, l, alSrc)
 
-  context.playSpeech("さようなら", alSrc)
+  context.playSpeech(voice, "さようなら", alSrc)
   sleep(1500)
 
 main()

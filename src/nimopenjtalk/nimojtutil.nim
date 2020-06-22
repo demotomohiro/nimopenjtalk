@@ -5,36 +5,42 @@ type
     mecab: Mecab
     njd: NJD
     jpcommon: JPCommon
+
+  OJTVoice* = object
     engine: HTS_Engine
 
-proc initialzie*(): OJTContext =
+proc createContext*(): OJTContext =
   if Mecab_initialize(addr result.mecab) == 0:
     raise newException(Exception, "Mecab_initialize returned 0")
   NJD_initialize(addr result.njd)
   JPCommon_initialize(addr result.jpcommon)
-  HTS_Engine_initialize(addr result.engine)
 
 proc clear*(context: var OJTContext) =
   discard Mecab_clear(addr context.mecab)
   NJD_clear(addr context.njd)
   JPCommon_clear(addr context.jpcommon);
-  HTS_Engine_clear(addr context.engine);
 
-proc load*(context: var OJTContext; dn_mecab, fn_voice: string): bool =
-  if Mecab_load(addr context.mecab, dn_mecab.cstring) == 0:
-    return false
+proc load*(context: var OJTContext; dn_mecab: string): bool =
+  Mecab_load(addr context.mecab, dn_mecab.cstring) != 0
 
+proc createVoice*(): OJTVoice =
+  HTS_Engine_initialize(addr result.engine)
+
+proc clear*(voice: var OJTVoice) =
+  HTS_Engine_clear(addr voice.engine);
+
+proc load*(voice: var OJTVoice; fn_voice: string): bool =
   var pvoice = fn_voice.cstring
-  if HTS_Engine_load(addr context.engine, addr pvoice, 1) == '\0':
+  if HTS_Engine_load(addr voice.engine, addr pvoice, 1) == '\0':
     return false
 
-  if HTS_Engine_get_fullcontext_label_format(addr context.engine) != "HTS_TTS_JPN":
+  if HTS_Engine_get_fullcontext_label_format(addr voice.engine) != "HTS_TTS_JPN":
     return false
 
   return true
 
-proc synthesis*(context: var OJTContext; txt: string): bool =
-  HTS_Engine_refresh(addr context.engine)
+proc synthesis*(context: var OJTContext; voice: var OJTVoice; txt: string): bool =
+  HTS_Engine_refresh(addr voice.engine)
   JPCommon_refresh(addr context.jpcommon)
   NJD_refresh(addr context.njd)
   discard Mecab_refresh(addr context.mecab)
@@ -55,22 +61,22 @@ proc synthesis*(context: var OJTContext; txt: string): bool =
   JPCommon_make_label(addr context.jpcommon)
   if JPCommon_get_label_size(addr context.jpcommon) > 2:
     if HTS_Engine_synthesize_from_strings(
-        addr context.engine,
+        addr voice.engine,
         JPCommon_get_label_feature(addr context.jpcommon),
         JPCommon_get_label_size(addr context.jpcommon).csize_t) == 1.cchar:
       result = true
 
-proc getSamplingFrequency*(context: var OJTContext): int =
-  HTS_Engine_get_sampling_frequency(addr context.engine).int
+proc getSamplingFrequency*(voice: var OJTVoice): int =
+  HTS_Engine_get_sampling_frequency(addr voice.engine).int
 
-proc setSamplingFrequency*(context: var OJTContext; freq: int) =
-  HTS_Engine_set_sampling_frequency(addr context.engine, freq.csize_t)
+proc setSamplingFrequency*(voice: var OJTVoice; freq: int) =
+  HTS_Engine_set_sampling_frequency(addr voice.engine, freq.csize_t)
 
-proc getNumSamples*(context: var OJTContext): int =
-  HTS_Engine_get_nsamples(addr context.engine).int
+proc getNumSamples*(voice: var OJTVoice): int =
+  HTS_Engine_get_nsamples(addr voice.engine).int
 
-proc getSpeechSample*(context: var OJTContext; index: int): int16 =
-  let s = HTS_Engine_get_generated_speech(addr context.engine, index.csize_t)
+proc getSpeechSample*(voice: var OJTVoice; index: int): int16 =
+  let s = HTS_Engine_get_generated_speech(addr voice.engine, index.csize_t)
   if s > 32767.0:
     result = 32767
   elif s < -32768.0:
@@ -78,7 +84,7 @@ proc getSpeechSample*(context: var OJTContext; index: int): int16 =
   else:
     result = int16(s)
 
-proc writeWave*(context: var OJTContext; wavout: string) =
+proc writeWave*(voice: var OJTVoice; wavout: string) =
   var wavfp = open(wavout, fmWrite)
-  HTS_Engine_save_riff(addr context.engine, wavfp)
+  HTS_Engine_save_riff(addr voice.engine, wavfp)
   close(wavfp)
