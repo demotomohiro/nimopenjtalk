@@ -60,31 +60,53 @@ proc playSpeech(context: var OJTContext; voice: var OJTVoice; text: string; src:
 proc main =
   var
     context = createContext()
-    voice = createVoice()
     alContext = initOpenAL()
     alSrc = initOpenALSrc()
   defer:
     alSrc.delete()
     alcontext.close()
-    voice.clear()
     context.clear()
 
   if not context.load("../data/open_jtalk_dic_utf_8-1.11"):
     echo "Failed to load dictionary"
     return
 
-  if not voice.load("../data/mei/mei_normal.htsvoice"):
+  var
+    voiceHappy = createVoice()
+    voiceNormal = createVoice()
+    voiceAngry = createVoice()
+    voiceSad = createVoice()
+  defer:
+    voiceSad.clear()
+    voiceAngry.clear()
+    voiceNormal.clear()
+    voiceHappy.clear()
+
+  if not voiceHappy.load("../data/mei/mei_happy.htsvoice"):
     echo "Failed to load voice"
     return
 
+  if not voiceNormal.load("../data/mei/mei_normal.htsvoice"):
+    echo "Failed to load voice"
+    return
+
+  if not voiceAngry.load("../data/mei/mei_angry.htsvoice"):
+    echo "Failed to load voice"
+    return
+
+  if not voiceSad.load("../data/mei/mei_sad.htsvoice"):
+    echo "Failed to load voice"
+    return
+
+  context.playSpeech(voiceHappy, "いらっしゃいませ", alSrc)
   echo "Type text to speech:"
   for l in stdin.lines:
     if l.len == 0:
-      context.playSpeech(voice, "何か書いてよ", alSrc)
+      context.playSpeech(voiceAngry, "何か書いてよ", alSrc)
     else:
-      context.playSpeech(voice, l, alSrc)
+      context.playSpeech(voiceNormal, l, alSrc)
 
-  context.playSpeech(voice, "さようなら", alSrc)
+  context.playSpeech(voiceSad, "さようなら", alSrc)
   sleep(1500)
 
 main()
