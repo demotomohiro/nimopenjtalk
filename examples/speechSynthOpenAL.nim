@@ -1,4 +1,4 @@
-import nimopenjtalk/nimojtutil, openal, strutils, os
+import nimopenjtalk/nimojtutil, openal, strutils, os, strformat
 
 type
   OpenALContext = object
@@ -57,6 +57,27 @@ proc playSpeech(context: var OJTContext; voice: var OJTVoice; text: string; src:
   else:
     quit "Failed to synthesis speech"
 
+proc runCmd(cmd: string;
+            context: var OJTContext;
+            voice: var OJTVoice;
+            src: var OpenALSrc) =
+  let tokens = cmd.splitWhitespace
+  doAssert tokens.len > 0
+  case tokens[0]
+  of "vol":
+    var vol = voice.volume
+    if tokens.len > 1:
+      let delta = parseFloat(tokens[1])
+      vol += delta
+      voice.volume = vol
+    echo fmt"{vol:g}"
+    let
+      prefix = if vol < 0.0: "まいなす" else: ""
+      speech = fmt"音量は{prefix}{vol.abs:g}です。"
+    context.playSpeech(voice, speech, src)
+  else:
+    context.playSpeech(voice, fmt"おまえは何をいっているんだ？", src)
+
 proc main =
   var
     context = createContext()
@@ -103,6 +124,8 @@ proc main =
   for l in stdin.lines:
     if l.len == 0:
       context.playSpeech(voiceAngry, "何か書いてよ", alSrc)
+    elif l[0] == ' ' or l[0] == '\t':
+      runCmd(l, context, voiceNormal, alSrc)
     else:
       context.playSpeech(voiceNormal, l, alSrc)
 

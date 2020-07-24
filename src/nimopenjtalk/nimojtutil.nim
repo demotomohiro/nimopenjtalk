@@ -88,3 +88,9 @@ proc writeWave*(voice: var OJTVoice; wavout: string) =
   var wavfp = open(wavout, fmWrite)
   HTS_Engine_save_riff(addr voice.engine, wavfp)
   close(wavfp)
+
+proc volume*(voice: var OJTVoice): float =
+  HTS_Engine_get_volume(addr voice.engine)
+
+proc `volume=`*(voice: var OJTVoice; volume: float) =
+  HTS_Engine_set_volume(addr voice.engine, volume)
