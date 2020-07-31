@@ -41,8 +41,8 @@ proc delete(x: var OpenALSrc) =
 proc playSpeech(context: var OJTContext; voice: var OJTVoice; text: string; src: var OpenALSrc) =
   if context.synthesis(voice, text):
     let
-      freq = voice.getSamplingFrequency
-      numSamples = voice.getNumSamples
+      freq = voice.samplingFrequency
+      numSamples = voice.numSamples
     if numSamples == 0:
       echo "No samples"
       return

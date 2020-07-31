@@ -66,13 +66,13 @@ proc synthesis*(context: var OJTContext; voice: var OJTVoice; txt: string): bool
         JPCommon_get_label_size(addr context.jpcommon).csize_t) == 1.cchar:
       result = true
 
-proc getSamplingFrequency*(voice: var OJTVoice): int =
+proc samplingFrequency*(voice: var OJTVoice): int =
   HTS_Engine_get_sampling_frequency(addr voice.engine).int
 
-proc setSamplingFrequency*(voice: var OJTVoice; freq: int) =
+proc `samplingFrequency=`*(voice: var OJTVoice; freq: int) =
   HTS_Engine_set_sampling_frequency(addr voice.engine, freq.csize_t)
 
-proc getNumSamples*(voice: var OJTVoice): int =
+proc numSamples*(voice: var OJTVoice): int =
   HTS_Engine_get_nsamples(addr voice.engine).int
 
 proc getSpeechSample*(voice: var OJTVoice; index: int): int16 =
