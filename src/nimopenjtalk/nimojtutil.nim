@@ -94,3 +94,9 @@ proc volume*(voice: var OJTVoice): float =
 
 proc `volume=`*(voice: var OJTVoice; volume: float) =
   HTS_Engine_set_volume(addr voice.engine, volume)
+
+proc speed*(voice: var OJTVoice): float =
+  HTS_Engine_get_speed(addr voice.engine)
+
+proc `speed=`*(voice: var OJTVoice; speed: float) =
+  HTS_Engine_set_speed(addr voice.engine, speed)

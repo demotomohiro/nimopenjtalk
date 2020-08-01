@@ -61,20 +61,26 @@ proc runCmd(cmd: string;
             context: var OJTContext;
             voice: var OJTVoice;
             src: var OpenALSrc) =
+  template applyCmd(propName: untyped; propJName: static[string]) =
+    var val {.inject.} = voice.propName
+    if tokens.len > 1:
+      let delta = parseFloat(tokens[1])
+      val += delta
+      voice.propName = val
+    echo fmt"{val:g}"
+    const propN {.inject.} = propJName
+    let
+      prefix {.inject.} = if val < 0.0: "まいなす" else: ""
+      speech = fmt"{propN}は{prefix}{val.abs:g}です。"
+    context.playSpeech(voice, speech, src)
+
   let tokens = cmd.splitWhitespace
   doAssert tokens.len > 0
   case tokens[0]
   of "vol":
-    var vol = voice.volume
-    if tokens.len > 1:
-      let delta = parseFloat(tokens[1])
-      vol += delta
-      voice.volume = vol
-    echo fmt"{vol:g}"
-    let
-      prefix = if vol < 0.0: "まいなす" else: ""
-      speech = fmt"音量は{prefix}{vol.abs:g}です。"
-    context.playSpeech(voice, speech, src)
+    applyCmd(volume, "音量")
+  of "spe":
+    applyCmd(speed, "スピード")
   else:
     context.playSpeech(voice, fmt"おまえは何をいっているんだ？", src)
 

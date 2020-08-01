@@ -271,6 +271,11 @@ void HTS_Engine_set_speed(HTS_Engine * engine, double f)
    engine->condition.speed = f;
 }
 
+double HTS_Engine_get_speed(HTS_Engine * engine)
+{
+   return engine->condition.speed;
+}
+
 /* HTS_Engine_set_phoneme_alignment_flag: set flag for using phoneme alignment in label */
 void HTS_Engine_set_phoneme_alignment_flag(HTS_Engine * engine, HTS_Boolean b)
 {

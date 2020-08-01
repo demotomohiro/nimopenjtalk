@@ -354,6 +354,8 @@ double HTS_Engine_get_gv_weight(HTS_Engine * engine, size_t stream_index);
 /* HTS_Engine_set_speed: set speech speed */
 void HTS_Engine_set_speed(HTS_Engine * engine, double f);
 
+double HTS_Engine_get_speed(HTS_Engine * engine);
+
 /* HTS_Engine_set_phoneme_alignment_flag: set flag for using phoneme alignment in label */
 void HTS_Engine_set_phoneme_alignment_flag(HTS_Engine * engine, HTS_Boolean b);
 
