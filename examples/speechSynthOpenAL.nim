@@ -63,9 +63,21 @@ proc runCmd(cmd: string;
             src: var OpenALSrc) =
   template applyCmd(propName: untyped; propJName: static[string]) =
     var val {.inject.} = voice.propName
-    if tokens.len > 1:
-      let delta = parseFloat(tokens[1])
-      val += delta
+    if tokens.len > 2:
+      let
+        op = tokens[1]
+        arg = parseFloat(tokens[2])
+      case op
+      of "=":
+        val = arg
+      of "+=":
+        val += arg
+      of "-=":
+        val -= arg
+      of "*=":
+        val *= arg
+      of "/=":
+        val /= arg
       voice.propName = val
     echo fmt"{val:g}"
     const propN {.inject.} = propJName
