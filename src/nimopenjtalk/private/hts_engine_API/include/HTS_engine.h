@@ -374,6 +374,8 @@ double HTS_Engine_get_beta(HTS_Engine * engine);
 /* HTS_Engine_add_half_tone: add half tone */
 void HTS_Engine_add_half_tone(HTS_Engine * engine, double f);
 
+double HTS_Engine_get_add_half_tone(HTS_Engine * engine);
+
 /* HTS_Engine_set_duration_interpolation_weight: set interpolation weight for duration */
 void HTS_Engine_set_duration_interpolation_weight(HTS_Engine * engine, size_t voice_index, double f);
 

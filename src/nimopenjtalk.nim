@@ -115,6 +115,10 @@ proc HTS_Engine_set_volume*(engine: ptr HTS_Engine; f: cdouble)
 proc HTS_Engine_get_volume*(engine: ptr HTS_Engine;): cdouble
 proc HTS_Engine_set_speed*(engine: ptr HTS_Engine; f: cdouble)
 proc HTS_Engine_get_speed*(engine: ptr HTS_Engine): cdouble
+proc HTS_Engine_set_alpha*(engine: ptr HTS_Engine; f: cdouble)
+proc HTS_Engine_get_alpha*(engine: ptr HTS_Engine): cdouble
+proc HTS_Engine_add_half_tone*(engine: ptr HTS_Engine; f: cdouble)
+proc HTS_Engine_get_add_half_tone*(engine: ptr HTS_Engine): cdouble
 {.pop.}
 
 proc text2mecab*(output, input: cstring) {.header: openjtalkDir / "text2mecab/text2mecab.h".}

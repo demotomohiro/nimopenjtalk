@@ -93,8 +93,12 @@ proc runCmd(cmd: string;
     applyCmd(volume, "音量")
   of "spe":
     applyCmd(speed, "スピード")
+  of "alp":
+    applyCmd(alpha, "アルファ")
+  of "hal":
+    applyCmd(add_half_tone, "追加ハーフトーン")
   else:
-    context.playSpeech(voice, fmt"おまえは何をいっているんだ？", src)
+    context.playSpeech(voice, "おまえは何をいっているんだ？", src)
 
 proc main =
   var
