@@ -109,8 +109,8 @@ proc `alpha=`*(voice: var OJTVoice; alpha: float) =
   HTS_Engine_set_alpha(addr voice.engine, alpha)
 
 # 声の高さ
-proc add_half_tone*(voice: var OJTVoice): float =
+proc addHalfTone*(voice: var OJTVoice): float =
   HTS_Engine_get_add_half_tone(addr voice.engine)
 
-proc `add_half_tone=`*(voice: var OJTVoice; add_half_tone: float) =
+proc `addHalfTone=`*(voice: var OJTVoice; add_half_tone: float) =
   HTS_Engine_add_half_tone(addr voice.engine, add_half_tone)

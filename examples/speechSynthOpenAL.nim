@@ -96,7 +96,7 @@ proc runCmd(cmd: string;
   of "alp":
     applyCmd(alpha, "アルファ")
   of "hal":
-    applyCmd(add_half_tone, "追加ハーフトーン")
+    applyCmd(addHalfTone, "追加ハーフトーン")
   else:
     context.playSpeech(voice, "おまえは何をいっているんだ？", src)
 
