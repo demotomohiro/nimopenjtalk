@@ -87,7 +87,10 @@ proc runCmd(cmd: string;
     context.playSpeech(voice, speech, src)
 
   let tokens = cmd.splitWhitespace
-  doAssert tokens.len > 0
+  if tokens.len == 0:
+    context.playSpeech(voice, "ソースコードをよく読むのだ。", src)
+    return
+
   case tokens[0]
   of "vol":
     applyCmd(volume, "音量")
@@ -143,10 +146,16 @@ proc main =
 
   context.playSpeech(voiceHappy, "いらっしゃいませ", alSrc)
   echo "Type text to speech:"
-  for l in stdin.lines:
-    if l.len == 0:
-      context.playSpeech(voiceAngry, "何か書いてよ", alSrc)
-    elif l[0] == ' ' or l[0] == '\t':
+  var l: string
+  for li in stdin.lines:
+    if li.len == 0:
+      if l.len == 0:
+        context.playSpeech(voiceAngry, "何か書いてよ", alSrc)
+        continue
+    else:
+      l = li
+
+    if l[0] == ' ' or l[0] == '\t':
       runCmd(l, context, voiceNormal, alSrc)
     else:
       context.playSpeech(voiceNormal, l, alSrc)
